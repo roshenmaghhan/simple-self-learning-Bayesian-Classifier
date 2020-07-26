@@ -48,11 +48,9 @@ public class Classifier {
 	public boolean checkGroupExists(String token, String group) {
 		ArrayList<Words> tmpCheck = storedWords.get(token);
 		
-		for(int i = 0; i < tmpCheck.size(); i++) {
-			if(tmpCheck.get(i).wordCategory == group) {
+		for(int i = 0; i < tmpCheck.size(); i++)
+			if(tmpCheck.get(i).wordCategory == group)
 				return true;
-			}
-		}
 		return false;
 	}
 	
@@ -63,9 +61,8 @@ public class Classifier {
 		currentCategory.docCount++;
 		storedGroups.put(group, currentCategory);
 		
-		for(String token : data.toLowerCase().split("\\W+")) {
+		for(String token : data.toLowerCase().split("\\W+"))
 			increment(token, group);
-		}
 	}
 	
 	public void probabilities() {
@@ -85,15 +82,12 @@ public class Classifier {
 	public String predict(String data) {
 		ArrayList<String> containedWords = new ArrayList<String>();
 		
-		for(String token : data.toLowerCase().split("\\W+")) {
-			if(storedWords.containsKey(token)) {
+		for(String token : data.toLowerCase().split("\\W+"))
+			if(storedWords.containsKey(token))
 				containedWords.add(token);
-			}
-		}
 		
-		for(String token : containedWords) {
+		for(String token : containedWords)
 			getResults(storedWords.get(token));
-		}
 		
 		return finalizeResults(containedWords.size());
 	}
@@ -145,29 +139,28 @@ public class Classifier {
 	}
 	
 	public void printProbabilities() {
-		for(String key : finalProduct.keySet()) {
+		for(String key : finalProduct.keySet())
 			System.out.println("KEY : " + key + ", VALUE : " + finalProduct.get(key));
-		}
 	}
 	
 	public void trainData(HashMap<String, String> dataSet) {
-		for(String key : dataSet.keySet()) {
+		for(String key : dataSet.keySet())
 			this.train(key, dataSet.get(key));
-		}
 		
 		this.probabilities();
 	}
 	
 	
 	public static void main(String[] args) {
-		//DRIVER CODE HERE\
+		//EXAMPLE CODE HERE
 		Classifier classifier = new Classifier();
 		classifier.train("My name is Roshen Maghhan", "intro");
 		classifier.train("I'm currently interning in Configura", "intro");
-		classifier.train(" The weather looks like its going to rain", "greeting");
+		classifier.train("The weather looks like its going to rain", "greeting");
 		classifier.train("The sky looks cloudy", "greeting");
 		classifier.probabilities();
 		String ans = classifier.predict("I am turning 22 this year");
+		classifier.printProbabilities();
 		System.out.println(ans);
 	}
 }
