@@ -1,6 +1,7 @@
 package classifier;
 
 import java.util.*;
+import java.sql.*;
 
 public class Classifier {
 	public HashMap<String, Categories> storedGroups = new HashMap<String, Categories>();
@@ -13,8 +14,11 @@ public class Classifier {
 	
 	public double totalProb;
 	
+	public String predictedText;
+	
 	public Classifier() {
 		totalProb = 0.0;
+		predictedText = "";
 	}
 	
 	public void increment(String token, String group) {
@@ -54,15 +58,18 @@ public class Classifier {
 		return false;
 	}
 	
-	public void train(String data, String group) {
-		boolean categoryExists = storedGroups.containsKey(group);
-		Categories currentCategory = categoryExists ? storedGroups.get(group) : new Categories();
-		
-		currentCategory.docCount++;
-		storedGroups.put(group, currentCategory);
-		
-		for(String token : data.toLowerCase().split("\\W+"))
-			increment(token, group);
+	public void train(HashMap<String, String> dataSet) {
+		for(String data : dataSet.keySet()) {
+			String group = dataSet.get(data);
+			boolean categoryExists = storedGroups.containsKey(group);
+			Categories currentCategory = categoryExists ? storedGroups.get(group) : new Categories();
+			
+			currentCategory.docCount++;
+			storedGroups.put(group, currentCategory);
+			
+			for(String token : data.toLowerCase().split("\\W+"))
+				increment(token, group);
+		}
 	}
 	
 	public void probabilities() {
@@ -81,6 +88,8 @@ public class Classifier {
 	
 	public String predict(String data) {
 		ArrayList<String> containedWords = new ArrayList<String>();
+		
+		predictedText = data.toLowerCase().replace("\\W+", " ");
 		
 		for(String token : data.toLowerCase().split("\\W+"))
 			if(storedWords.containsKey(token))
@@ -103,7 +112,7 @@ public class Classifier {
 				num = groupCounter.get(tmpObj.wordCategory) + 1;
 			}
 			
-			finalProduct. put(tmpObj.wordCategory, newProb);
+			finalProduct.put(tmpObj.wordCategory, newProb);
 			groupCounter.put(tmpObj.wordCategory, num);
 		}
 	}
@@ -127,6 +136,7 @@ public class Classifier {
 	public String highestValue() {
 		double highestVal = 0.0;
 		String res = "";
+		String data = "";
 		
 		for(String key : finalProduct.keySet()) {
 			if(finalProduct.get(key) > highestVal) {
@@ -135,6 +145,10 @@ public class Classifier {
 			}
 		}
 		
+		ClassifierDB db = new ClassifierDB();
+		if(!db.doesDataExist(predictedText, res))
+			db.insertData(predictedText, res);
+		db.closeConnection();
 		return res;
 	}
 	
@@ -144,23 +158,44 @@ public class Classifier {
 	}
 	
 	public void trainData(HashMap<String, String> dataSet) {
-		for(String key : dataSet.keySet())
-			this.train(key, dataSet.get(key));
 		
+		ClassifierDB db = new ClassifierDB();
+
+		for(String key : dataSet.keySet()) {
+			String data = key.toLowerCase().replaceAll("\\W+", " ");
+			if(!db.doesDataExist(data, dataSet.get(key).toLowerCase()))
+				db.insertData(data, dataSet.get(key).toLowerCase());
+		}
+
+		this.train(db.listData());
+		db.closeConnection();
 		this.probabilities();
 	}
 	
+	public void deleteDB() {
+		ClassifierDB db = new ClassifierDB();
+		db.deleteDB();
+		db.closeConnection();
+	}
 	
 	public static void main(String[] args) {
 		//EXAMPLE CODE HERE
+		HashMap<String, String> initialData = new HashMap<String, String>();
+		initialData.put("My name is Roshen Maghhan", "intro");
+		initialData.put("I'm currently interning in a Swedish company", "intro");
+		initialData.put("The weather looks like its going to rain", "greeting");
+		initialData.put("The sky looks cloudy", "greeting");		
+		
 		Classifier classifier = new Classifier();
-		classifier.train("My name is Roshen Maghhan", "intro");
-		classifier.train("I'm currently interning in Configura", "intro");
-		classifier.train("The weather looks like its going to rain", "greeting");
-		classifier.train("The sky looks cloudy", "greeting");
-		classifier.probabilities();
-		String ans = classifier.predict("I am turning 22 this year");
-		classifier.printProbabilities();
-		System.out.println(ans);
+		classifier.trainData(initialData);
+		System.out.println(classifier.predict("I am turning 22 this year"));
+		
+		/*
+		 * IF YOU WANT TO DELETE THE DATABASE,
+		 * TO USE A DIFFERENT DATASET AND DIFFERENT CATEGORIES,
+		 * USE deleteDB();
+		 * 
+		 * E.g : classifier.deleteDB();
+		 * */
 	}
 }
