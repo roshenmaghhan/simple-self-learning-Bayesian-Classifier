@@ -5,6 +5,11 @@ public class Categories {
 	
 	public int tokenCount;
 	
+	
+	/*
+	 * Constructor
+	 */
+	
 	public Categories() {
 		docCount = 0;
 		tokenCount = 0;

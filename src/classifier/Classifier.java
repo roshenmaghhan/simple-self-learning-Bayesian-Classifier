@@ -16,10 +16,20 @@ public class Classifier {
 	
 	public String predictedText;
 	
+	
+	/*
+	 * Constructor
+	 */
+	
 	public Classifier() {
 		totalProb = 0.0;
 		predictedText = "";
 	}
+
+	
+	/*
+	 * Increment the word's count
+	 */
 	
 	public void increment(String token, String group) {
 		Categories curCategory = storedGroups.get(group);
@@ -40,6 +50,11 @@ public class Classifier {
 		}
 	}
 	
+	
+	/*
+	 * Increases the existing word's wordCount
+	 */
+	
 	public void increaseWordCount(ArrayList<Words> arr, String group) {
 		for(int i = 0; i < arr.size(); i++) {
 			if(arr.get(i).wordCategory == group) {
@@ -49,6 +64,11 @@ public class Classifier {
 		}
 	}
 	
+	
+	/*
+	 * Check if the group exists
+	 */
+	
 	public boolean checkGroupExists(String token, String group) {
 		ArrayList<Words> tmpCheck = storedWords.get(token);
 		
@@ -57,6 +77,11 @@ public class Classifier {
 				return true;
 		return false;
 	}
+	
+	
+	/*
+	 * Train the dataset from the retrieved database
+	 */
 	
 	public void train(HashMap<String, String> dataSet) {
 		for(String data : dataSet.keySet()) {
@@ -72,6 +97,11 @@ public class Classifier {
 		}
 	}
 	
+	
+	/*
+	 * Calculates the probability based on the frequency of appearance
+	 */
+	
 	public void probabilities() {
 		for(String key : storedWords.keySet()) {
 			ArrayList<Words> wordsList = storedWords.get(key);
@@ -85,6 +115,11 @@ public class Classifier {
 			}
 		}
 	}
+	
+	
+	/*
+	 * Starts the predicting process to predict the data
+	 */
 	
 	public String predict(String data) {
 		ArrayList<String> containedWords = new ArrayList<String>();
@@ -100,6 +135,11 @@ public class Classifier {
 		
 		return finalizeResults(containedWords.size());
 	}
+	
+	
+	/*
+	 * Calculates the probability for each word
+	 */
 	
 	public void getResults(ArrayList<Words> texts) {
 		for(Words tmpObj : texts) {
@@ -117,6 +157,11 @@ public class Classifier {
 		}
 	}
 	
+	
+	/*
+	 *  Finalises the probabilities
+	 */
+	
 	public String finalizeResults(int count) {
 		for(String key : groupCounter.keySet()) {
 			double addProb = Math.pow(0.01, count - groupCounter.get(key));
@@ -132,6 +177,12 @@ public class Classifier {
 		
 		return highestValue();
 	}
+	
+	
+	/*
+	 * Returns the category with the highest probability,
+	 * and then enters it into the database 
+	 */
 	
 	public String highestValue() {
 		double highestVal = 0.0;
@@ -152,10 +203,20 @@ public class Classifier {
 		return res;
 	}
 	
+	
+	/*
+	 * Prints the probabilities
+	 */
+	
 	public void printProbabilities() {
 		for(String key : finalProduct.keySet())
 			System.out.println("KEY : " + key + ", VALUE : " + finalProduct.get(key));
 	}
+	
+	
+	/*
+	 * Train the data from the map, and insert training data into database
+	 */
 	
 	public void trainData(HashMap<String, String> dataSet) {
 		
@@ -171,6 +232,11 @@ public class Classifier {
 		db.closeConnection();
 		this.probabilities();
 	}
+	
+	
+	/*
+	 * Deletes the entire database 
+	 */
 	
 	public void deleteDB() {
 		ClassifierDB db = new ClassifierDB();

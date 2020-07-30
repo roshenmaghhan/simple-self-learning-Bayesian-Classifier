@@ -11,6 +11,11 @@ public class Words {
 	
 	public double prob;
 	
+	
+	/*
+	 * Constructor
+	 */
+	
 	public Words(String text, String wordCategory, int count) {
 		this.text = text;
 		this.wordCategory = wordCategory;

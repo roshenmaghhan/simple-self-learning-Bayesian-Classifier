@@ -7,7 +7,10 @@ public class ClassifierDB {
 	Connection c = null;
 	Statement stmt = null;
 	
-	//Constructor
+	/*
+	 * Constructor
+	 */
+	
 	public ClassifierDB(){
 		try {
 			Class.forName("org.sqlite.JDBC");
@@ -18,8 +21,12 @@ public class ClassifierDB {
 			System.out.println("Database Creation Error ! : " + e.getMessage());
 		}
 	}
+
 	
-	//Returns the training data and category from the database, as a map
+	/*
+	 * Returns the training data and category from the database, as a map 
+	 */
+
 	public HashMap<String, String> listData() {
 		HashMap<String, String> dataSet = new HashMap<String,String>();
 		try {
@@ -37,7 +44,11 @@ public class ClassifierDB {
 		return dataSet;
 	}
 	
-	//Closes the database connection
+	
+	/*
+	 * Closes the database connection
+	 */
+
 	public void closeConnection() {
 		try {
 			c.close();
@@ -46,7 +57,11 @@ public class ClassifierDB {
 		}
 	}
 	
-	//Executes a query to the database
+
+	/*
+	 * Executes a query to the database 
+	 */
+
 	public void executeQuery(String query) {
 		try {
 			this.stmt = c.createStatement();
@@ -56,7 +71,11 @@ public class ClassifierDB {
 		}
 	}
 	
-	//Inserts training data and category into the database
+
+	/*
+	 * Inserts training data and category into the database 
+	 */
+
 	public void insertData(String data, String group) {
 		try {
 			String query = "INSERT INTO trainingDB(label, category) VALUES ('" + data  + "', '" + group + "')";
@@ -67,7 +86,11 @@ public class ClassifierDB {
 		}
 	}
 	
-	//Checks the database if the training data already exists
+
+	/*
+	 * Checks the database if the training data already exists 
+	 */
+
 	public boolean doesDataExist(String data, String category) {
 		boolean queryExists = false;
 		try {
@@ -81,7 +104,11 @@ public class ClassifierDB {
 		return queryExists;
 	}
 	
-	//Deletes the entire database
+
+	/*
+	 * Deletes the entire database 
+	 */
+
 	public void deleteDB() {
 		try {
 			String query = "DROP TABLE IF EXISTS trainingDB;";
