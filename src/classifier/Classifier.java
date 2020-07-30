@@ -254,7 +254,7 @@ public class Classifier {
 		
 		Classifier classifier = new Classifier();
 		classifier.trainData(initialData);
-		System.out.println(classifier.predict("I am turning 22 this year"));
+		System.out.println(classifier.predict("I am turning 22 this year")); // Predicts text as "intro"
 		
 		/*
 		 * IF YOU WANT TO DELETE THE DATABASE,
